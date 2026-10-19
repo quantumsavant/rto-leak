@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemap reference intentionally omitted until the preferred production
-# domain is confirmed (the app is currently behind Vercel Deployment
-# Protection, which blocks crawlers). Add:
-# Sitemap: https://<preferred-domain>/sitemap.xml
-# once the site is public.
+Sitemap: https://rto-leak-18j6.vercel.app/sitemap.xml
