@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CONFIG } from "./config";
 import ArticlePage from "./ArticlePage";
+import NotFoundPage from "./NotFoundPage";
 import { ARTICLES } from "./content/articles";
 import { parseRoute, type Route } from "./lib/route";
 import { isSafeHttpUrl } from "./lib/url";
+import { resolveDraft } from "./lib/number-draft";
 import {
   DEFAULT_INPUTS,
   calculate,
@@ -37,15 +39,15 @@ function NumberField({
 }) {
   const [draft, setDraft] = useState<string | null>(null);
   const shown = draft ?? String(value);
+  // Tracks Escape for the current edit session. Guards against a stale blur
+  // handler committing a draft the user already cancelled.
+  const cancelledRef = useRef(false);
 
   const commit = () => {
-    if (draft !== null) {
-      const n = Number(draft);
-      if (draft.trim() !== "" && Number.isFinite(n)) {
-        onCommit(Math.min(max, Math.max(min, n)));
-      }
-      setDraft(null);
-    }
+    const r = resolveDraft({ draft, cancelled: cancelledRef.current, min, max });
+    cancelledRef.current = false;
+    if (r.commit !== null) onCommit(r.commit);
+    setDraft(null);
   };
 
   return (
@@ -58,12 +60,22 @@ function NumberField({
         aria-label={label}
         className="w-20 bg-transparent text-right text-base font-bold text-ink tabular-nums outline-none"
         value={shown}
-        onFocus={() => setDraft(String(value))}
-        onChange={(e) => setDraft(e.target.value)}
+        onFocus={() => {
+          cancelledRef.current = false;
+          setDraft(String(value));
+        }}
+        onChange={(e) => {
+          // New keystrokes start a fresh edit — clear any earlier cancellation.
+          cancelledRef.current = false;
+          setDraft(e.target.value);
+        }}
         onBlur={commit}
         onKeyDown={(e) => {
           if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-          if (e.key === "Escape") setDraft(null);
+          if (e.key === "Escape") {
+            cancelledRef.current = true;
+            setDraft(null);
+          }
         }}
       />
       {suffix && <span className="text-sm text-smoke ml-1">{suffix}</span>}
@@ -219,6 +231,11 @@ export default function App() {
       document
         .querySelector('meta[name="description"]')
         ?.setAttribute("content", a.metaDescription);
+    } else if (route.view === "notfound") {
+      document.title = "Page not found — RTO Leak";
+      document
+        .querySelector('meta[name="description"]')
+        ?.setAttribute("content", "This RTO Leak guide doesn't exist.");
     } else {
       document.title = HOME_TITLE;
       document.querySelector('meta[name="description"]')?.setAttribute("content", HOME_DESC);
@@ -227,6 +244,7 @@ export default function App() {
   }, [route]);
 
   if (route.view === "article") return <ArticlePage slug={route.slug} />;
+  if (route.view === "notfound") return <NotFoundPage />;
   return <Home />;
 }
 

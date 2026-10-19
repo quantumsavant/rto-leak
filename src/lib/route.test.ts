@@ -17,10 +17,30 @@ describe("parseRoute", () => {
       slug: "how-to-calculate-rto-costs",
     });
   });
-  it("falls back to home for unknown slugs", () => {
-    expect(parseRoute("/guides/does-not-exist")).toEqual({ view: "home" });
+  it("returns notfound for unknown guide slugs (never silent home)", () => {
+    expect(parseRoute("/guides/does-not-exist")).toEqual({
+      view: "notfound",
+      slug: "does-not-exist",
+    });
   });
-  it("falls back to home for unknown paths", () => {
+  it("returns notfound for unknown guide slugs with trailing slash", () => {
+    expect(parseRoute("/guides/does-not-exist/")).toEqual({
+      view: "notfound",
+      slug: "does-not-exist",
+    });
+  });
+  it("rejects malformed guide paths", () => {
+    expect(parseRoute("/guides/../etc")).toEqual({ view: "notfound", slug: "../etc" });
+    expect(parseRoute("/guides/%2e%2e/x")).toEqual({ view: "notfound", slug: "%2e%2e/x" });
+  });
+  it("falls back to home for unknown non-guide paths", () => {
     expect(parseRoute("/random")).toEqual({ view: "home" });
+  });
+  it("maps /guides and /guides/ to home (no guides index)", () => {
+    expect(parseRoute("/guides")).toEqual({ view: "home" });
+    expect(parseRoute("/guides/")).toEqual({ view: "home" });
+  });
+  it("maps empty pathname to home", () => {
+    expect(parseRoute("")).toEqual({ view: "home" });
   });
 });
