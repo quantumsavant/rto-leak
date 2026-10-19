@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CONFIG } from "./config";
+import ArticlePage from "./ArticlePage";
+import { ARTICLES } from "./content/articles";
+import { parseRoute, type Route } from "./lib/route";
 import {
   DEFAULT_INPUTS,
   calculate,
@@ -201,7 +204,32 @@ function drawShareCard(canvas: HTMLCanvasElement, d: CardData) {
 
 const fmtPct = (n: number) => `${n}%`;
 
+const HOME_TITLE = "RTO Leak — Free RTO Cost Calculator for Indian D2C Brands";
+const HOME_DESC =
+  "Calculate your D2C brand's annual RTO cost in 20 seconds. Enter monthly orders, COD share, RTO rate and shipping cost — free, no signup, runs in your browser.";
+
 export default function App() {
+  const [route] = useState<Route>(() => parseRoute());
+
+  useEffect(() => {
+    if (route.view === "article") {
+      const a = ARTICLES[route.slug];
+      document.title = a.metaTitle;
+      document
+        .querySelector('meta[name="description"]')
+        ?.setAttribute("content", a.metaDescription);
+    } else {
+      document.title = HOME_TITLE;
+      document.querySelector('meta[name="description"]')?.setAttribute("content", HOME_DESC);
+    }
+    window.scrollTo(0, 0);
+  }, [route]);
+
+  if (route.view === "article") return <ArticlePage slug={route.slug} />;
+  return <Home />;
+}
+
+function Home() {
   const [inputs, setInputs] = useState<Inputs>({ ...DEFAULT_INPUTS });
   const cardRef = useRef<HTMLCanvasElement>(null);
 
@@ -364,6 +392,29 @@ export default function App() {
               </button>
             </div>
           </div>
+        </section>
+
+        {/* What is RTO */}
+        <section className="mt-10 max-w-3xl" aria-labelledby="rto-h">
+          <h2 id="rto-h" className="text-xl font-extrabold tracking-tight">What is RTO?</h2>
+          <p className="text-smoke text-sm leading-relaxed mt-2">
+            RTO — Return to Origin — is when a dispatched order comes back undelivered. In Indian
+            ecommerce it is overwhelmingly a COD problem: the buyer is not available, refuses the
+            parcel, or the address was never serviceable. You pay forward shipping plus return
+            shipping, and earn nothing on that order. COD RTO rates in India run 20–30% (GoKwik,
+            Shiprocket), against roughly 2–3% for prepaid orders.
+          </p>
+          <h3 className="font-bold text-sm mt-5 mb-2">How to use this calculator</h3>
+          <ol className="list-decimal pl-5 space-y-1.5 text-sm text-smoke leading-relaxed">
+            <li>Enter your monthly orders, average order value, and COD share from your dashboard.</li>
+            <li>Enter your RTO rate (as % of COD orders) and what one returned order costs you in shipping.</li>
+            <li>Read the annual logistics cost, compare it against a target rate, and export the report card.</li>
+          </ol>
+          <p className="text-sm mt-4">
+            <a href="/guides/how-to-calculate-rto-costs" className="font-semibold text-ink underline">
+              Read the step-by-step guide: how to calculate RTO costs for an Indian D2C brand
+            </a>
+          </p>
         </section>
 
         {/* Current vs target comparison */}
