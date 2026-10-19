@@ -1,5 +1,6 @@
 import { ARTICLES, type Block } from "./content/articles";
 import { CONFIG } from "./config";
+import { isSafeHttpUrl } from "./lib/url";
 
 function renderBlock(b: Block, i: number) {
   switch (b.type) {
@@ -37,14 +38,18 @@ function renderBlock(b: Block, i: number) {
           <ul className="space-y-3">
             {b.items.map((s, j) => (
               <li key={j} className="text-sm leading-relaxed">
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-semibold text-ink underline"
-                >
-                  {s.label}
-                </a>
+                {isSafeHttpUrl(s.url) ? (
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-ink underline"
+                  >
+                    {s.label}
+                  </a>
+                ) : (
+                  <span className="font-semibold text-ink">{s.label}</span>
+                )}
                 <div className="text-smoke mt-0.5">{s.note}</div>
               </li>
             ))}
@@ -107,9 +112,13 @@ export default function ArticlePage({ slug }: { slug: string }) {
           {CONFIG.creatorName ? (
             <span>
               Built by{" "}
-              <a href={CONFIG.creatorLink || "#"} className="font-semibold text-ink underline">
-                {CONFIG.creatorName}
-              </a>{" "}
+              {isSafeHttpUrl(CONFIG.creatorLink) ? (
+                <a href={CONFIG.creatorLink} className="font-semibold text-ink underline">
+                  {CONFIG.creatorName}
+                </a>
+              ) : (
+                <span className="font-semibold text-ink">{CONFIG.creatorName}</span>
+              )}{" "}
               for D2C India
             </span>
           ) : (

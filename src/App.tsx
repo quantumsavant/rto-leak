@@ -3,6 +3,7 @@ import { CONFIG } from "./config";
 import ArticlePage from "./ArticlePage";
 import { ARTICLES } from "./content/articles";
 import { parseRoute, type Route } from "./lib/route";
+import { isSafeHttpUrl } from "./lib/url";
 import {
   DEFAULT_INPUTS,
   calculate,
@@ -516,7 +517,7 @@ function Home() {
               RTO Leak is free forever. If it shocked you into action, fuel the next free tool.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              {CONFIG.razorpayLink && (
+              {CONFIG.razorpayLink && isSafeHttpUrl(CONFIG.razorpayLink) && (
                 <a href={CONFIG.razorpayLink} target="_blank" rel="noreferrer"
                   className="bg-burn-deep hover:opacity-90 transition text-white font-bold rounded-xl px-8 py-3">
                   Donate via Razorpay
@@ -557,9 +558,13 @@ function Home() {
           {CONFIG.creatorName ? (
             <span>
               Built by{" "}
-              <a href={CONFIG.creatorLink || "#"} className="font-semibold text-ink underline">
-                {CONFIG.creatorName}
-              </a>{" "}
+              {isSafeHttpUrl(CONFIG.creatorLink) ? (
+                <a href={CONFIG.creatorLink} className="font-semibold text-ink underline">
+                  {CONFIG.creatorName}
+                </a>
+              ) : (
+                <span className="font-semibold text-ink">{CONFIG.creatorName}</span>
+              )}{" "}
               for D2C India
             </span>
           ) : (
