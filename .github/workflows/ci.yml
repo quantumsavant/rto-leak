@@ -1,0 +1,30 @@
+# CI: lint, test, build, and dependency audit on every push to main and PR.
+# Actions are pinned to immutable commit SHAs (see comments for tags).
+# Minimal permissions: read-only checkout, no secrets exposed to PR code.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx vitest run
+      - run: npm run build
+      # Fails the workflow on high/critical advisories; moderate/low are reported only.
+      - run: npm audit --audit-level=high
