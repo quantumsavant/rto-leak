@@ -16,6 +16,16 @@
 
 export const DEFAULT_COST_PER_RTO = 225; // INR — editable starting assumption
 
+/** Defaults shown on first load and restored by "Reset". */
+export const DEFAULT_INPUTS: Inputs = {
+  monthlyOrders: 1000,
+  aov: 800,
+  codPct: 60,
+  rtoPct: 30,
+  costPerRto: DEFAULT_COST_PER_RTO,
+  targetRtoPct: 20,
+};
+
 /** Hard bounds for validation. UI sliders stay well inside these. */
 const BOUNDS = {
   monthlyOrders: [0, 1_000_000],

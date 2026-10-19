@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_INPUTS,
   calculate,
   formatCompact,
   formatINR,
@@ -143,5 +144,14 @@ describe("formatting", () => {
 describe("selfCheck", () => {
   it("GoKwik band consistency holds", () => {
     expect(selfCheck()).toBe(true);
+  });
+});
+
+describe("DEFAULT_INPUTS", () => {
+  it("is valid and matches the documented defaults", () => {
+    expect(validateInputs(DEFAULT_INPUTS)).toEqual([]);
+    const r = calculate(DEFAULT_INPUTS);
+    expect(r.annualBurn).toBe(486000);
+    expect(r.scenarioAnnualSavings).toBe(162000);
   });
 });
