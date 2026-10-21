@@ -131,6 +131,7 @@ export function buildGuideHtml(template: string, a: Article, site: string = SITE
   for (const [re, replacement, label] of swaps) {
     page = swapMeta(page, re, replacement, label, a.slug);
   }
+  const org = { "@type": "Organization", name: "RTO Leak", url: site };
   const jsonLd = `<script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",
@@ -138,6 +139,8 @@ export function buildGuideHtml(template: string, a: Article, site: string = SITE
     description: a.metaDescription,
     mainEntityOfPage: url,
     datePublished: a.published,
+    author: org,
+    publisher: org,
   })}</script>`;
   if (page.includes("</head>")) {
     page = page.replace("</head>", `${jsonLd}</head>`);

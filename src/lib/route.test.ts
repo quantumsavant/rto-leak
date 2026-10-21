@@ -11,6 +11,12 @@ describe("parseRoute", () => {
       slug: "how-to-calculate-rto-costs",
     });
   });
+  it("maps the RTO rate guide slug to the article view", () => {
+    expect(parseRoute("/guides/how-to-calculate-rto-rate")).toEqual({
+      view: "article",
+      slug: "how-to-calculate-rto-rate",
+    });
+  });
   it("ignores trailing slashes", () => {
     expect(parseRoute("/guides/how-to-calculate-rto-costs/")).toEqual({
       view: "article",

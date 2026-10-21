@@ -112,6 +112,91 @@ export const ARTICLES: Record<string, Article> = {
       },
     ],
   },
+  "how-to-calculate-rto-rate": {
+    slug: "how-to-calculate-rto-rate",
+    title: "How to Calculate RTO Rate for an Indian Ecommerce Brand",
+    metaTitle: "How to Calculate RTO Rate for an Indian Ecommerce Brand — RTO Leak",
+    metaDescription:
+      "RTO rate = RTO orders ÷ orders dispatched × 100 — but which orders? Learn the COD rate vs the overall rate, a worked example, and the 5 mistakes that make rates incomparable.",
+    published: "2026-10-21",
+    intro:
+      "RTO rate is the share of dispatched orders that come back undelivered. The formula is one line, but it hides one decision that changes the answer: what you divide by. Two brands can report different rates for the same underlying problem simply because one divides by COD orders and the other by all orders. State your denominator every time, or your rate cannot be compared to anything.",
+    blocks: [
+      { type: "h2", text: "What RTO rate actually measures" },
+      {
+        type: "p",
+        text: "An order counts toward RTO when it is dispatched, fails delivery, and returns to your warehouse. It happens before or at the delivery stage. It is not a post-delivery return: once a customer accepts and pays for an order and later sends it back, that is a customer return (RTV), a different metric with different causes and costs.",
+      },
+      { type: "h2", text: "The formula — and the denominator decision" },
+      {
+        type: "formula",
+        label: "RTO rate",
+        text: "RTO rate = (RTO orders ÷ orders dispatched) × 100",
+      },
+      {
+        type: "p",
+        text: "There are two standard versions, and you should always say which one you mean. The COD RTO rate divides by COD orders dispatched only — this is GoKwik's definition, and it answers 'how risky is my COD book?' The overall RTO rate divides by all orders dispatched, and it answers 'how much of my whole business comes back?' Both are legitimate; they answer different questions.",
+      },
+      { type: "h2", text: "Worked example — one business, two rates" },
+      {
+        type: "p",
+        text: "A brand dispatches 3,000 orders in a month, 60% of them COD, and 450 orders come back as RTO:",
+      },
+      {
+        type: "list",
+        items: [
+          "COD orders dispatched: 3,000 × 60% = 1,800 per month.",
+          "COD RTO rate: 450 ÷ 1,800 × 100 = 25%.",
+          "Overall RTO rate: 450 ÷ 3,000 × 100 = 15%.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Same business, same 450 failed orders — 25% one way, 15% the other. Neither number is wrong, but quoting one against the other's benchmark is meaningless. For the cost side, at the calculator's default assumption of ₹225 per event, 450 events × ₹225 = ₹1,01,250 a month, or about ₹12.15 lakh a year if that month repeats — in shipping alone; the companion cost guide shows that math in full.",
+      },
+      { type: "h2", text: "5 mistakes that make RTO rates incomparable" },
+      {
+        type: "list",
+        items: [
+          "Mixing denominators — comparing your overall rate to someone else's COD rate, or vice versa.",
+          "Counting orders still in transit or in NDR follow-up as RTO — count only orders that actually reached RTO status.",
+          "Counting post-delivery returns as RTO — returns after acceptance belong to the returns rate, not RTO.",
+          "Dividing by delivered orders — the base is orders dispatched, not orders that made it. A delivered-only denominator inflates the rate.",
+          "Mixing periods — dividing this month's returns by last month's dispatches, or ignoring that returns lag dispatches by days. Use one period's dispatched base and note the lag.",
+        ],
+      },
+      { type: "h2", text: "What counts as a good rate?" },
+      {
+        type: "p",
+        text: "There is no single universal good rate: it moves with payment mix, category, and geography, and every published figure uses its own definition and sample. What others report, with those caveats attached: GoKwik puts the average RTO rate in Indian e-commerce at 20–25% (their formula uses COD orders dispatched as the denominator). Qikink's 2026 order data (1 Jan–31 Aug 2026, 4,16,887 domestic orders from fashion-focused sellers — their sample, not the whole Indian market) reports COD 30.1%, prepaid 1.5%, and 12.4% overall. Treat these as context, not targets: the most useful comparison is your own rate, measured the same way, month on month.",
+      },
+      { type: "h2", text: "From rate to rupees" },
+      {
+        type: "p",
+        text: "A rate alone does not tell you what RTO costs. Multiply your RTO events by your cost per event, or run the free RTO Leak calculator with your orders, COD share, and rate — it uses this exact method and shows the annual cost plus a what-if target scenario.",
+      },
+      {
+        type: "sources",
+        items: [
+          {
+            label: "GoKwik — How to reduce RTO in e-commerce",
+            url: "https://www.gokwik.co/blog/how-to-reduce-rto-in-e-commerce",
+            note: "Opened and read 2026-10-21. Source for the RTO formula with COD orders dispatched as the denominator, and the 20–25% average RTO rate in Indian e-commerce.",
+          },
+          {
+            label: "Qikink — What is RTO and how does it affect online businesses?",
+            url: "https://qikink.com/blog/what-is-return-to-origin-how-it-affects-online-businesses/",
+            note: "Opened and read 2026-10-21. Data: 1 Jan–31 Aug 2026, 4,16,887 domestic shipped orders; RTO orders = orders that reached 'RTO initiated'; in-transit orders excluded; fashion-focused sellers (apparel, accessories, home decor) — Qikink's sample, not the whole Indian market. Page published 2025-10-18; data last updated 12 Oct 2026.",
+          },
+          {
+            label: "RTO Leak — How to Calculate RTO Costs",
+            url: "https://rto-leak-18j6.vercel.app/guides/how-to-calculate-rto-costs",
+            note: "Companion guide: turn this rate into an annual cost with a worked example.",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 export const ARTICLE_LIST = Object.values(ARTICLES);

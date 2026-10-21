@@ -45,6 +45,32 @@ describe("buildGuideHtml", () => {
     expect(html).toContain('"@type":"Article"');
   });
 
+  it("adds one Article JSON-LD block with author and publisher for every guide", () => {
+    const expectedOrg = {
+      "@type": "Organization",
+      name: "RTO Leak",
+      url: "https://rto-leak-18j6.vercel.app",
+    };
+    for (const article of Object.values(ARTICLES)) {
+      const html = buildGuideHtml(TEMPLATE, article);
+      // Exactly one Article block: no duplication with the template's WebApplication block.
+      expect(html.match(/"@type":"Article"/g)).toHaveLength(1);
+      const match = html.match(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+      );
+      expect(match).not.toBeNull();
+      const data = JSON.parse(match![1]);
+      expect(data["@type"]).toBe("Article");
+      expect(data.headline).toBe(article.title);
+      expect(data.datePublished).toBe(article.published);
+      expect(data.mainEntityOfPage).toBe(
+        `https://rto-leak-18j6.vercel.app/guides/${article.slug}`,
+      );
+      expect(data.author).toEqual(expectedOrg);
+      expect(data.publisher).toEqual(expectedOrg);
+    }
+  });
+
   it("keeps the SPA bundle script so the page still boots", () => {
     const html = buildGuideHtml(TEMPLATE, ARTICLE);
     expect(html).toContain('<script src="/assets/index.js"></script>');
