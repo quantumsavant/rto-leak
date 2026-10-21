@@ -530,6 +530,11 @@ function Home() {
                 </a>
               )}
             </div>
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <img src="/upi-qr.png" alt="UPI QR code — scan karke donate karein"
+                className="w-52 rounded-xl bg-white p-2" />
+              <p className="text-white/70 text-sm">QR scan karein — kisi bhi UPI app se</p>
+            </div>
           </section>
         )}
 
