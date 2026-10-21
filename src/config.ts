@@ -6,7 +6,7 @@ export const CONFIG = {
   /** Shown on the share card + footer, e.g. "rtoleak.in". Empty = hidden. */
   siteUrl: "",
   /** UPI ID for donations, e.g. "vijayvarma@upi". Empty = UPI button hidden. */
-  upiId: "",
+  upiId: "vijayecc9984@okaxis",
   /** Razorpay payment link for donations. Empty = button hidden. */
   razorpayLink: "",
   /** Creator credit in footer, e.g. "Vijay Varma". Empty = generic line. */
