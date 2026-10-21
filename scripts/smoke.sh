@@ -76,7 +76,7 @@ check() {
   echo "PASS: $path -> $expected"
 }
 
-check "/" 200 "RTO Leak" "/assets/"
+check "/" 200 "RTO Leak" "/assets/" "How much is RTO costing you?" "guides/how-to-calculate-rto-costs" "guides/how-to-calculate-rto-rate"
 check "/guides/how-to-calculate-rto-costs" 200 "How to Calculate RTO Costs for an Indian D2C Brand"
 check "/guides/how-to-calculate-rto-rate" 200 "How to Calculate RTO Rate for an Indian Ecommerce Brand"
 check "/sitemap.xml" 200 "guides/how-to-calculate-rto-costs" "guides/how-to-calculate-rto-rate"

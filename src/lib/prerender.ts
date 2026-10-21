@@ -155,3 +155,39 @@ export function buildGuideHtml(template: string, a: Article, site: string = SITE
   }
   return page;
 }
+
+/**
+ * Static homepage block for the initial HTML (Week 2).
+ *
+ * Every string below is copied verbatim from the app's own hero and
+ * "What is RTO?" sections in src/App.tsx — no new copy is invented here.
+ * Text-only on purpose: no inputs, sliders, or buttons, so there are no
+ * dead controls for a visitor whose JavaScript never runs. The SPA bundle
+ * still boots on the page and replaces this block with the interactive
+ * calculator for visitors; crawlers and no-JS readers see the meaning.
+ * Head metadata (title, description, canonical, OG, WebApplication
+ * JSON-LD) is left exactly as the template provides it.
+ */
+export function renderHomeStaticHtml(): string {
+  return [
+    `<header><a href="/">RTO Leak</a></header>`,
+    `<h1>How much is RTO costing you?</h1>`,
+    `<p>COD RTO rates in India run 20–30% (GoKwik, Shiprocket). Enter your numbers — the logistics cost, the tied-up capital, and a what-if scenario update immediately.</p>`,
+    `<h2>What is RTO?</h2>`,
+    `<p>RTO — Return to Origin — is when a dispatched order comes back undelivered. In Indian ecommerce it is overwhelmingly a COD problem: the buyer is not available, refuses the parcel, or the address was never serviceable. You pay forward shipping plus return shipping, and earn nothing on that order. COD RTO rates in India run 20–30% (GoKwik, Shiprocket), against roughly 2–3% for prepaid orders.</p>`,
+    `<p>RTO rate = RTO orders ÷ COD orders dispatched (GoKwik's definition).</p>`,
+    `<nav><a href="/guides/how-to-calculate-rto-costs">How to Calculate RTO Costs for an Indian D2C Brand</a> · <a href="/guides/how-to-calculate-rto-rate">How to Calculate RTO Rate for an Indian Ecommerce Brand</a></nav>`,
+  ].join("");
+}
+
+/** Inject the static homepage block into the built index.html. */
+export function buildHomeHtml(template: string): string {
+  if (template.includes('<div id="root"></div>')) {
+    return template.replace(
+      '<div id="root"></div>',
+      `<div id="root">${renderHomeStaticHtml()}</div>`,
+    );
+  }
+  console.warn("[prerender] #root placeholder not found (homepage)");
+  return template;
+}

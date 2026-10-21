@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ARTICLES } from "../content/articles";
-import { buildGuideHtml, escapeAttr, escapeHtml } from "./prerender";
+import { buildGuideHtml, buildHomeHtml, escapeAttr, escapeHtml } from "./prerender";
 
 const TEMPLATE = `<!doctype html><html><head>
 <title>Home title</title>
@@ -79,5 +79,38 @@ describe("buildGuideHtml", () => {
   it("escapes special characters in article text", () => {
     expect(escapeHtml(`a & b <c> "d"`)).toBe(`a &amp; b &lt;c&gt; "d"`);
     expect(escapeAttr(`a "b" & <c>`)).toBe(`a &quot;b&quot; &amp; &lt;c&gt;`);
+  });
+});
+
+describe("buildHomeHtml", () => {
+  it("injects the homepage H1, intro, RTO definition, formula and both guide links", () => {
+    const html = buildHomeHtml(TEMPLATE);
+    expect(html).toContain("<h1>How much is RTO costing you?</h1>");
+    expect(html).toContain("COD RTO rates in India run 20–30% (GoKwik, Shiprocket)");
+    expect(html).toContain("RTO — Return to Origin — is when a dispatched order comes back undelivered.");
+    expect(html).toContain("RTO rate = RTO orders ÷ COD orders dispatched (GoKwik's definition).");
+    expect(html).toContain('href="/guides/how-to-calculate-rto-costs"');
+    expect(html).toContain('href="/guides/how-to-calculate-rto-rate"');
+    expect(html).not.toContain('<div id="root"></div>');
+  });
+
+  it("contains no interactive controls, so there are no dead elements pre-JS", () => {
+    const html = buildHomeHtml(TEMPLATE);
+    expect(html).not.toContain("<input");
+    expect(html).not.toContain("<button");
+    expect(html).not.toContain("<select");
+  });
+
+  it("preserves the template head metadata and keeps the SPA bundle script", () => {
+    const html = buildHomeHtml(TEMPLATE);
+    expect(html).toContain("<title>Home title</title>");
+    expect(html).toContain('<link rel="canonical" href="https://rto-leak-18j6.vercel.app/" />');
+    expect(html).toContain('property="og:type" content="website"');
+    expect(html).toContain('<script src="/assets/index.js"></script>');
+  });
+
+  it("returns the template unchanged when the #root placeholder is missing", () => {
+    const noRoot = TEMPLATE.replace('<div id="root"></div>', "<div></div>");
+    expect(buildHomeHtml(noRoot)).toBe(noRoot);
   });
 });
