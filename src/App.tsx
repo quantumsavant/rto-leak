@@ -569,7 +569,7 @@ function Home() {
               {upiLink && (
                 <button type="button" onClick={() => setShowQr(true)}
                   className="bg-white/10 border border-white/30 text-white font-bold rounded-xl px-8 py-3 hover:bg-white/20 transition">
-                  QR code dikhao
+                  QR code
                 </button>
               )}
             </div>
