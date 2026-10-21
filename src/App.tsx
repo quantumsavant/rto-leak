@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CONFIG } from "./config";
 import ArticlePage from "./ArticlePage";
+import NotFoundPage from "./NotFoundPage";
 import { ARTICLES } from "./content/articles";
 import { parseRoute, type Route } from "./lib/route";
 import { isSafeHttpUrl } from "./lib/url";
@@ -213,20 +214,49 @@ export default function App() {
   const [route] = useState<Route>(() => parseRoute());
 
   useEffect(() => {
+    // Keep client-side metadata in sync on in-app navigation. The
+    // prerendered guide HTML already carries the same values for
+    // crawlers and social bots that do not run JavaScript.
+    const setMeta = (selector: string, content: string) => {
+      document.querySelector(selector)?.setAttribute("content", content);
+    };
+    const setCanonical = (href: string) => {
+      document.querySelector('link[rel="canonical"]')?.setAttribute("href", href);
+    };
     if (route.view === "article") {
       const a = ARTICLES[route.slug];
+      const url = `https://rto-leak-18j6.vercel.app/guides/${route.slug}`;
       document.title = a.metaTitle;
-      document
-        .querySelector('meta[name="description"]')
-        ?.setAttribute("content", a.metaDescription);
+      setMeta('meta[name="description"]', a.metaDescription);
+      setMeta('meta[property="og:title"]', a.metaTitle);
+      setMeta('meta[property="og:description"]', a.metaDescription);
+      setMeta('meta[property="og:type"]', "article");
+      setMeta('meta[property="og:url"]', url);
+      setMeta('meta[name="twitter:title"]', a.metaTitle);
+      setMeta('meta[name="twitter:description"]', a.metaDescription);
+      setCanonical(url);
     } else {
       document.title = HOME_TITLE;
-      document.querySelector('meta[name="description"]')?.setAttribute("content", HOME_DESC);
+      setMeta('meta[name="description"]', HOME_DESC);
+      setMeta('meta[property="og:title"]', HOME_TITLE);
+      setMeta(
+        'meta[property="og:description"]',
+        "COD RTO rates in India run 20–30% (GoKwik, Shiprocket). See your brand's annual RTO burn in 20 seconds. Free, no signup.",
+      );
+      setMeta('meta[property="og:type"]', "website");
+      setMeta('meta[property="og:url"]', "https://rto-leak-18j6.vercel.app/");
+      setMeta('meta[name="twitter:title"]', HOME_TITLE);
+      setMeta(
+        'meta[name="twitter:description"]',
+        "COD RTO rates in India run 20–30% (GoKwik, Shiprocket). See your brand's annual RTO burn in 20 seconds. Free, no signup.",
+      );
+      setCanonical("https://rto-leak-18j6.vercel.app/");
     }
     window.scrollTo(0, 0);
   }, [route]);
 
   if (route.view === "article") return <ArticlePage slug={route.slug} />;
+  if (route.view === "notfound") return <NotFoundPage slug={route.slug} />;
   return <Home />;
 }
 

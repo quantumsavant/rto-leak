@@ -17,8 +17,20 @@ describe("parseRoute", () => {
       slug: "how-to-calculate-rto-costs",
     });
   });
-  it("falls back to home for unknown slugs", () => {
-    expect(parseRoute("/guides/does-not-exist")).toEqual({ view: "home" });
+  it("returns notfound for unknown guide slugs", () => {
+    expect(parseRoute("/guides/does-not-exist")).toEqual({
+      view: "notfound",
+      slug: "does-not-exist",
+    });
+  });
+  it("returns notfound for unknown guide slugs with a trailing slash", () => {
+    expect(parseRoute("/guides/does-not-exist/")).toEqual({
+      view: "notfound",
+      slug: "does-not-exist",
+    });
+  });
+  it("falls back to home for an empty guides path", () => {
+    expect(parseRoute("/guides/")).toEqual({ view: "home" });
   });
   it("falls back to home for unknown paths", () => {
     expect(parseRoute("/random")).toEqual({ view: "home" });
