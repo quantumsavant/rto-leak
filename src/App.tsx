@@ -453,6 +453,11 @@ function Home() {
               Read the step-by-step guide: how to calculate RTO costs for an Indian D2C brand
             </a>
           </p>
+          <p className="text-sm mt-2">
+            <a href="/guides/how-to-calculate-rto-rate" className="font-semibold text-ink underline">
+              Read the companion guide: how to calculate RTO rate — COD rate vs overall rate, and the 5 mistakes that make rates incomparable
+            </a>
+          </p>
         </section>
 
         {/* Current vs target comparison */}

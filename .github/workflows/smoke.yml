@@ -1,0 +1,73 @@
+# Production smoke: verify the live site after every push to main, and
+# re-check it on a schedule. Read-only — it never writes, deploys, or
+# changes anything. It only fails loudly when production is wrong.
+#
+# Why two modes in one job:
+# - On push, Vercel deploys asynchronously, so the job first builds the
+#   pushed commit locally, extracts its bundle filename, and polls
+#   production (up to 10 minutes) until that bundle is served. Only then
+#   does it run the checks. Without this wait, the job would pass against
+#   the previous deployment and a stuck deploy would go unnoticed — the
+#   exact failure mode seen with commit f331a2b.
+# - On schedule (and manual dispatch), there is no new deployment to wait
+#   for, so the job just runs the checks against current production.
+#
+# Notifications: GitHub notifies repository watchers (per their own
+# notification settings) when a workflow run fails, and stays silent on
+# success. No Slack, SMS, pager, or third-party monitor is involved.
+# Flakiness guards live in scripts/smoke.sh: curl-level retries for
+# transient network failures, fixed-string markers, and no third-party
+# URLs (an unrelated site's outage can never fail this job).
+
+name: Production smoke
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Every 6 hours (UTC) — 4 checks/day is plenty for a static site.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      PROD_URL: https://rto-leak-18j6.vercel.app
+    steps:
+      # actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # actions/setup-node@v4 — only needed on push, for the deploy-wait build.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        if: github.event_name == 'push'
+        with:
+          node-version: 20
+          cache: npm
+      - name: Wait for this push to reach production
+        if: github.event_name == 'push'
+        run: |
+          npm ci
+          npm run build
+          BUNDLE="$(grep -o '/assets/[^"]*\.js' dist/index.html | head -1)"
+          echo "Waiting for production to serve $BUNDLE (deadline: 10 minutes) ..."
+          # Deadline-based loop: total wait never exceeds 10 minutes plus
+          # one bounded request, regardless of per-request latency.
+          END=$((SECONDS + 600))
+          while true; do
+            if curl -s --max-time 15 "$PROD_URL/" | grep -qF "$BUNDLE"; then
+              echo "Production is serving this push ($BUNDLE)."
+              exit 0
+            fi
+            if [ "$SECONDS" -ge "$END" ]; then
+              break
+            fi
+            echo "  not yet, retrying in 30s..."
+            sleep 30
+          done
+          echo "Production did not serve $BUNDLE within 10 minutes — deployment may be stuck."
+          exit 1
+      - name: Run production smoke checks
+        run: bash scripts/smoke.sh "$PROD_URL"

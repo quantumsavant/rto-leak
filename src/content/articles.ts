@@ -108,6 +108,11 @@ export const ARTICLES: Record<string, Article> = {
             url: "https://www.shiprocket.in/blog/order-value-recovery/",
             note: "Seen via search excerpt 2026-10-19 (page not opened). Source for the 25–30% COD RTO figure and ~2–3% prepaid RTO figure.",
           },
+          {
+            label: "RTO Leak — How to Calculate RTO Rate",
+            url: "https://rto-leak-18j6.vercel.app/guides/how-to-calculate-rto-rate",
+            note: "Companion guide: COD RTO rate vs overall RTO rate, with a worked example and the 5 mistakes that make rates incomparable.",
+          },
         ],
       },
     ],
