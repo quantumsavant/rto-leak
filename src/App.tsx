@@ -301,6 +301,13 @@ function Home() {
     ? `upi://pay?pa=${encodeURIComponent(CONFIG.upiId)}&pn=${encodeURIComponent("RTO Leak")}&cu=INR`
     : "";
   const hasDonation = Boolean(CONFIG.razorpayLink || upiLink);
+  const [showQr, setShowQr] = useState(false);
+  useEffect(() => {
+    if (!showQr) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setShowQr(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showQr]);
 
   return (
     <div className="min-h-screen">
@@ -529,12 +536,26 @@ function Home() {
                   Donate via UPI
                 </a>
               )}
+              {upiLink && (
+                <button type="button" onClick={() => setShowQr(true)}
+                  className="bg-white/10 border border-white/30 text-white font-bold rounded-xl px-8 py-3 hover:bg-white/20 transition">
+                  QR code dikhao
+                </button>
+              )}
             </div>
-            <div className="mt-6 flex flex-col items-center gap-2">
-              <img src="/upi-qr.png" alt="UPI QR code — scan karke donate karein"
-                className="w-52 rounded-xl bg-white p-2" />
-              <p className="text-white/70 text-sm">QR scan karein — kisi bhi UPI app se</p>
-            </div>
+            {showQr && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+                onClick={() => setShowQr(false)} role="dialog" aria-modal="true" aria-label="UPI QR code">
+                <div className="relative rounded-2xl bg-white p-4 max-w-sm w-full"
+                  onClick={(e) => e.stopPropagation()}>
+                  <button type="button" onClick={() => setShowQr(false)} aria-label="Band karein"
+                    className="absolute top-2 right-2 rounded-full bg-ink text-white w-8 h-8 font-bold">✕</button>
+                  <img src="/upi-qr.png" alt="UPI QR code — scan karke donate karein"
+                    className="w-full rounded-xl" />
+                  <p className="text-ink/70 text-sm text-center mt-3">QR scan karein — kisi bhi UPI app se</p>
+                </div>
+              </div>
+            )}
           </section>
         )}
 
